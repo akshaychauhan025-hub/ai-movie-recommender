@@ -134,8 +134,10 @@
 
   <!-- SCREEN 3: RECOMMENDATIONS -->
   <div id="screen-recommendations" style="display:none;">
-    <h2>Your Picks</h2>
-  </div>
+    <h2>Your Picks 🎬</h2>
+    <div id="rec-container"></div>
+    <button onclick="location.reload()">Start Again</button>
+</div>
 <script>
   function signIn() {
     var name = document.getElementById('user-name').value;
@@ -152,6 +154,44 @@
     document.getElementById('screen-signin').style.display = 'none';
     document.getElementById('screen-preferences').style.display = 'block';
   }
+async function getRecommendations() {
+    var segment = document.getElementById('segment').value;
+    var language = document.getElementById('language').value;
+    var genre = document.getElementById('genre').value;
+    var mood = document.getElementById('mood').value;
+    var freetext = document.getElementById('freetext').value;
+
+    document.getElementById('screen-preferences').style.display = 'none';
+    document.getElementById('screen-recommendations').style.display = 'block';
+    document.getElementById('rec-container').innerHTML = '<p>🤖 AI is finding your matches...</p>';
+
+    var prompt = `You are a movie recommendation expert. Recommend exactly 5 movies or shows for this user:
+- User type: ${segment}
+- Language preference: ${language}
+- Genre: ${genre}
+- Mood: ${mood}
+- Additional request: ${freetext}
+
+For each movie provide:
+1. Title and year
+2. Why it matches this user specifically
+3. Rating out of 10
+
+Format each recommendation clearly numbered 1 to 5.`;
+
+    var response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+        method: 'POST',
+        headers: {
+            'Authorization': 'Bearer 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',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ inputs: prompt, parameters: { max_new_tokens: 800 } })
+    });
+
+    var data = await response.json();
+    var text = data[0].generated_text.replace(prompt, '').trim();
+    document.getElementById('rec-container').innerHTML = '<pre>' + text + '</pre>';
+}
 </script>
 </body>
 </html>
