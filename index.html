@@ -179,13 +179,16 @@ For each movie provide:
 
 Format each recommendation clearly numbered 1 to 5.`;
 
-    var response = await fetch('https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1', {
+   var response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer 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',
+            'Authorization': 'Bearer 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',
             'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ inputs: prompt, parameters: { max_new_tokens: 800 } })
+        body: JSON.stringify({
+            model: 'mistralai/mistral-7b-instruct:free',
+            messages: [{ role: 'user', content: prompt }]
+        })
     });
 
     var data = await response.json();
