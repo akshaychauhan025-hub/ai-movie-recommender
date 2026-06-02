@@ -194,7 +194,7 @@ Format each recommendation clearly numbered 1 to 5.`;
     });
 
     var data = await response.json();
-   var text = data.choices[0].message.content.trim();
+   var text = data.choices ? data.choices[0].message.content.trim() : JSON.stringify(data);
     document.getElementById('rec-container').innerHTML = '<pre>' + text + '</pre>';
 }
 </script>
