@@ -80,8 +80,57 @@
 
   <!-- SCREEN 2: PREFERENCES -->
   <div id="screen-preferences" style="display:none;">
-    <h2>What are you in the mood for?</h2>
+  <h2>What are you in the mood for?</h2>
+
+  <div class="pref-group">
+    <label>Who are you?</label>
+    <select id="segment">
+      <option value="genz">Gen Z</option>
+      <option value="millennial">Millennial</option>
+      <option value="genx">Gen X</option>
+      <option value="family">Family</option>
+    </select>
   </div>
+
+  <div class="pref-group">
+    <label>Language</label>
+    <select id="language">
+      <option value="bollywood">Bollywood</option>
+      <option value="hollywood">Hollywood</option>
+      <option value="korean">Korean</option>
+      <option value="international">International</option>
+    </select>
+  </div>
+
+  <div class="pref-group">
+    <label>Genre</label>
+    <select id="genre">
+      <option value="thriller">Thriller</option>
+      <option value="romantic">Romantic</option>
+      <option value="comedy">Comedy</option>
+      <option value="horror">Horror</option>
+      <option value="scifi">Sci-Fi</option>
+      <option value="drama">Drama</option>
+    </select>
+  </div>
+
+  <div class="pref-group">
+    <label>Mood today</label>
+    <select id="mood">
+      <option value="relaxed">Relaxed</option>
+      <option value="excited">Excited</option>
+      <option value="emotional">Emotional</option>
+      <option value="laugh">Need a laugh</option>
+    </select>
+  </div>
+
+  <div class="pref-group">
+    <label>Tell us more (optional)</label>
+    <textarea id="freetext" placeholder="e.g. Something like Inception but lighter..."></textarea>
+  </div>
+
+  <button onclick="getRecommendations()">Find My Match 🎬</button>
+</div>
 
   <!-- SCREEN 3: RECOMMENDATIONS -->
   <div id="screen-recommendations" style="display:none;">
