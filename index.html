@@ -87,6 +87,22 @@
   <div id="screen-recommendations" style="display:none;">
     <h2>Your Picks</h2>
   </div>
+<script>
+  function signIn() {
+    var name = document.getElementById('user-name').value;
+    var email = document.getElementById('user-email').value;
 
+    if (name === '' || email === '') {
+      alert('Please enter your name and email');
+      return;
+    }
+
+    localStorage.setItem('userName', name);
+    localStorage.setItem('userEmail', email);
+
+    document.getElementById('screen-signin').style.display = 'none';
+    document.getElementById('screen-preferences').style.display = 'block';
+  }
+</script>
 </body>
 </html>
