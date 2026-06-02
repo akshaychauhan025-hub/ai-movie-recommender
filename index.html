@@ -192,7 +192,7 @@ Format each recommendation clearly numbered 1 to 5.`;
     });
 
     var data = await response.json();
-    var text = data[0].generated_text.replace(prompt, '').trim();
+   var text = data.choices[0].message.content.trim();
     document.getElementById('rec-container').innerHTML = '<pre>' + text + '</pre>';
 }
 </script>
