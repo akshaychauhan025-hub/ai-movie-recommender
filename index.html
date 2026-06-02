@@ -183,7 +183,9 @@ Format each recommendation clearly numbered 1 to 5.`;
         method: 'POST',
         headers: {
             'Authorization': 'Bearer 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',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://akshaychauhan025-hub.github.io',
+            'X-Title': 'AI Movie Recommender'
         },
         body: JSON.stringify({
             model: 'mistralai/mistral-7b-instruct:free',
