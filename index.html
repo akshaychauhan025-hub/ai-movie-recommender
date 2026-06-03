@@ -179,16 +179,14 @@ For each movie provide:
 
 Format each recommendation clearly numbered 1 to 5.`;
 
-   var response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+  var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
-            'Authorization': 'Bearer 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',
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://akshaychauhan025-hub.github.io',
-            'X-Title': 'AI Movie Recommender'
+            'Authorization': 'Bearer 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',
+            'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            model: 'mistralai/mistral-7b-instruct:free',
+            model: 'llama3-8b-8192',
             messages: [{ role: 'user', content: prompt }]
         })
     });
