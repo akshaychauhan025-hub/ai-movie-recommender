@@ -109,6 +109,7 @@ button:hover {
 
   <!-- SCREEN 2: PREFERENCES -->
   <div id="screen-preferences" style="display:none;">
+  <div id="returning-msg" style="display:none;"></div>
   <h2>What are you in the mood for?</h2>
 
   <div class="pref-group">
@@ -180,8 +181,15 @@ button:hover {
     localStorage.setItem('userName', name);
     localStorage.setItem('userEmail', email);
 
+    var history = localStorage.getItem('userHistory_' + email);
+
     document.getElementById('screen-signin').style.display = 'none';
     document.getElementById('screen-preferences').style.display = 'block';
+
+    if (history) {
+      document.getElementById('returning-msg').style.display = 'block';
+      document.getElementById('returning-msg').innerText = 'Welcome back ' + name + '! We remember your taste. Update preferences or go straight to your picks.';
+    }
   }
 async function getRecommendations() {
     var segment = document.getElementById('segment').value;
