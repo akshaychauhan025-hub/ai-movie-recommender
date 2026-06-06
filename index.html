@@ -283,6 +283,13 @@ var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
 
     var data = await response.json();
    var text = data.choices ? data.choices[0].message.content.trim() : JSON.stringify(data);
+  var validationErrors = validateRecommendations(text);
+if (validationErrors.length > 0) {
+    console.log('Guardrail triggered:', validationErrors);
+    document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ AI response quality issue detected: ' + validationErrors.join(' ') + ' Trying again...</p>';
+    setTimeout(getRecommendations, 2000);
+    return;
+}
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
 var html = '';
@@ -308,6 +315,36 @@ document.getElementById('rec-container').innerHTML = html;
     } else {
         alert('👎 Noted! We will improve your picks.');
     }
+}
+  function validateRecommendations(text) {
+    var errors = [];
+
+    // Check 1 — did AI return exactly 5 movies?
+    var movieCount = (text.match(/MOVIE \d/g) || []).length;
+    if (movieCount < 5) {
+        errors.push('AI returned ' + movieCount + ' movies instead of 5.');
+    }
+
+    // Check 2 — does each movie have a year?
+    var years = text.match(/\(\d{4}\)/g) || [];
+    if (years.length < movieCount) {
+        errors.push('Some movies are missing a year.');
+    }
+
+    // Check 3 — are years realistic?
+    years.forEach(function(year) {
+        var y = parseInt(year.replace(/[()]/g, ''));
+        if (y < 1950 || y > 2025) {
+            errors.push('Suspicious year detected: ' + year + '. Possible hallucination.');
+        }
+    });
+
+    // Check 4 — does response follow format?
+    if (!text.includes('WHY:') || !text.includes('RATING:')) {
+        errors.push('AI did not follow the required format.');
+    }
+
+    return errors;
 }
 </script>
 </body>
