@@ -290,6 +290,7 @@ if (validationErrors.length > 0) {
     setTimeout(getRecommendations, 2000);
     return;
 }
+  console.log('Validation ran. Errors found:', validationErrors.length);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
 var html = '';
