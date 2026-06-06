@@ -202,21 +202,24 @@ async function getRecommendations() {
     document.getElementById('screen-recommendations').style.display = 'block';
     document.getElementById('rec-container').innerHTML = '<p>🤖 AI is finding your matches...</p>';
 
-    var prompt = `You are a movie recommendation expert. Recommend exactly 5 movies or shows for this user:
+    var systemInstruction = `You are an expert movie recommendation engine. Your rules:
+1. Only recommend real movies or shows that actually exist
+2. Always personalise the reason to the specific user type and mood
+3. Never recommend the same movie twice to the same user
+4. Format your response exactly as:
+   MOVIE 1: [Title] ([Year])
+   WHY: [Why it matches this user]
+   RATING: [X/10]
+5. Always recommend exactly 5 movies, no more, no less`;
+
+var userPrompt = `Recommend 5 movies for this user:
 - User type: ${segment}
 - Language preference: ${language}
 - Genre: ${genre}
 - Mood: ${mood}
-- Additional request: ${freetext}
+- Additional request: ${freetext}`;
 
-For each movie provide:
-1. Title and year
-2. Why it matches this user specifically
-3. Rating out of 10
-
-Format each recommendation clearly numbered 1 to 5.`;
-
-  var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
         headers: {
             'Authorization': 'Bearer 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',
@@ -224,7 +227,10 @@ Format each recommendation clearly numbered 1 to 5.`;
         },
         body: JSON.stringify({
             model: 'llama-3.3-70b-versatile',
-            messages: [{ role: 'user', content: prompt }]
+            messages: [
+                { role: 'system', content: systemInstruction },
+                { role: 'user', content: userPrompt }
+            ]
         })
     });
 
