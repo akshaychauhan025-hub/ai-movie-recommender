@@ -225,14 +225,18 @@ async function getRecommendations() {
     document.getElementById('screen-recommendations').style.display = 'block';
     document.getElementById('rec-container').innerHTML = '<p>🤖 AI is finding your matches...</p>';
 
-    var systemInstruction = `You are an expert movie recommendation engine. Your rules:
+   var systemInstruction = `You are an expert movie recommendation engine. Your rules:
 1. Only recommend real movies or shows that actually exist
 2. Always personalise the reason to the specific user type and mood
 3. Never recommend the same movie twice to the same user
-4. Format your response exactly as:
-   MOVIE 1: [Title] ([Year])
-   WHY: [Why it matches this user]
-   RATING: [X/10]
+4. You MUST format every response exactly like this with no introduction text:
+MOVIE 1: [Title] ([Year])
+WHY: [reason]
+RATING: [X/10]
+MOVIE 2: [Title] ([Year])
+WHY: [reason]
+RATING: [X/10]
+Start directly with MOVIE 1. No introduction. No summary at the end.
 5. Always recommend exactly 5 movies, no more, no less`;
 
 var email = localStorage.getItem('userEmail');
