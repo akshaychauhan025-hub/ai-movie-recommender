@@ -230,7 +230,8 @@ Format each recommendation clearly numbered 1 to 5.`;
 
     var data = await response.json();
    var text = data.choices ? data.choices[0].message.content.trim() : JSON.stringify(data);
-    document.getElementById('rec-container').innerHTML = '<pre>' + text + '</pre>';
+    var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+document.getElementById('rec-container').innerHTML = '<div>' + formatted + '</div>';
 }
 </script>
 </body>
