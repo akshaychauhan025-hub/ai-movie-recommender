@@ -286,10 +286,18 @@ var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
   var validationErrors = validateRecommendations(text);
 if (validationErrors.length > 0) {
     console.log('Guardrail triggered:', validationErrors);
-    document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ AI response quality issue detected: ' + validationErrors.join(' ') + ' Trying again...</p>';
-    setTimeout(getRecommendations, 2000);
+    var retryCount = parseInt(localStorage.getItem('retryCount') || '0');
+    if (retryCount < 3) {
+        localStorage.setItem('retryCount', retryCount + 1);
+        document.getElementById('rec-container').innerHTML = '<p style="color:orange;">⚠️ Improving your recommendations... (Attempt ' + (retryCount + 1) + ' of 3)</p>';
+        setTimeout(getRecommendations, 2000);
+    } else {
+        localStorage.setItem('retryCount', '0');
+        document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ We could not get good recommendations right now. Please try again.</p>';
+    }
     return;
 }
+localStorage.setItem('retryCount', '0');
   console.log('Validation ran. Errors found:', validationErrors.length);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
