@@ -245,7 +245,7 @@ MOVIE 2: [Title] ([Year])
 WHY: [reason]
 RATING: [X/10]
 Start directly with MOVIE 1. No introduction. No summary at the end.
-5. Always recommend exactly 3 movies, no more, no less`;
+5. Always recommend exactly 5 movies, no more, no less`;
 
 var email = localStorage.getItem('userEmail');
 var historyRaw = localStorage.getItem('userHistory_' + email);
@@ -259,7 +259,7 @@ if (historyRaw) {
     historyContext += '\n- Previously disliked: ' + (disliked.length ? disliked.join(', ') : 'none') + '. Do NOT recommend these again.';
 }
 
-var userPrompt = `Recommend 3 movies for this user:
+var userPrompt = `Recommend 5 movies for this user:
 - User type: ${segment}
 - Language preference: ${language}
 - Genre: ${genre}
