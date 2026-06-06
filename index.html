@@ -235,12 +235,24 @@ async function getRecommendations() {
    RATING: [X/10]
 5. Always recommend exactly 5 movies, no more, no less`;
 
+var email = localStorage.getItem('userEmail');
+var historyRaw = localStorage.getItem('userHistory_' + email);
+var historyContext = '';
+
+if (historyRaw) {
+    var history = JSON.parse(historyRaw);
+    var liked = history.filter(h => h.type === 'like').map(h => 'Movie index ' + h.index);
+    var disliked = history.filter(h => h.type === 'dislike').map(h => 'Movie index ' + h.index);
+    historyContext = '\n- Previously liked: ' + (liked.length ? liked.join(', ') : 'none');
+    historyContext += '\n- Previously disliked: ' + (disliked.length ? disliked.join(', ') : 'none') + '. Do NOT recommend these again.';
+}
+
 var userPrompt = `Recommend 5 movies for this user:
 - User type: ${segment}
 - Language preference: ${language}
 - Genre: ${genre}
 - Mood: ${mood}
-- Additional request: ${freetext}`;
+- Additional request: ${freetext}${historyContext}`;
 
 var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
