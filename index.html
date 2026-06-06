@@ -106,16 +106,21 @@ button:hover {
     gap: 10px;
   }
 
-  .btn-like {
-    background: #27ae60;
-    padding: 8px 20px;
-    font-size: 14px;
-  }
-
   .btn-dislike {
     background: #e74c3c;
     padding: 8px 20px;
     font-size: 14px;
+  }
+
+  #returning-msg {
+    background: #e8f4e8;
+    border: 1px solid #27ae60;
+    border-radius: 8px;
+    padding: 14px 20px;
+    margin-bottom: 20px;
+    color: #1a5c2a;
+    font-weight: bold;
+    font-size: 15px;
   }
 </style>
 </head>
@@ -212,6 +217,9 @@ button:hover {
     if (history) {
       document.getElementById('returning-msg').style.display = 'block';
       document.getElementById('returning-msg').innerText = 'Welcome back ' + name + '! We remember your taste. Update preferences or go straight to your picks.';
+    } else {
+    document.getElementById('returning-msg').style.display = 'block';
+    document.getElementById('returning-msg').innerText = 'Welcome ' + name + '! Tell us what you are in the mood for.';
     }
   }
 async function getRecommendations() {
