@@ -197,6 +197,17 @@ button:hover {
     <button onclick="location.reload()">Start Again</button>
 </div>
 <script>
+  var retryCount = 0;
+  function validateInput(freetext) {
+  var errors = [];
+  if (freetext.trim() === '') return errors;
+  if (freetext.length > 300) errors.push('Please keep your request under 300 characters.');
+  var letterRatio = (freetext.match(/[a-zA-Z]/g) || []).length / freetext.length;
+  if (letterRatio < 0.4) errors.push('That doesn\'t look like a valid request.');
+  if (/(.)\1{6,}/.test(freetext)) errors.push('Please enter a meaningful request.');
+  if (freetext.trim().length < 3) errors.push('Please enter at least 3 characters.');
+  return errors;
+}
   function signIn() {
     var name = document.getElementById('user-name').value;
     var email = document.getElementById('user-email').value;
@@ -222,12 +233,19 @@ button:hover {
     document.getElementById('returning-msg').innerText = 'Welcome ' + name + '! Tell us what you are in the mood for.';
     }
   }
-async function getRecommendations() {
+async function getRecommendations(isRetry) {
+  if (!isRetry) retryCount = 0;
     var segment = document.getElementById('segment').value;
     var language = document.getElementById('language').value;
     var genre = document.getElementById('genre').value;
     var mood = document.getElementById('mood').value;
     var freetext = document.getElementById('freetext').value;
+  // INPUT VALIDATION
+var inputErrors = validateInput(freetext);
+if (inputErrors.length > 0) {
+  alert('⚠️ ' + inputErrors[0]);
+  return;
+}
 
     document.getElementById('screen-preferences').style.display = 'none';
     document.getElementById('screen-recommendations').style.display = 'block';
@@ -286,18 +304,15 @@ var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
   var validationErrors = validateRecommendations(text);
 if (validationErrors.length > 0) {
     console.log('Guardrail triggered:', validationErrors);
-    var retryCount = parseInt(localStorage.getItem('retryCount') || '0');
-    if (retryCount < 3) {
-        localStorage.setItem('retryCount', retryCount + 1);
-        document.getElementById('rec-container').innerHTML = '<p style="color:orange;">⚠️ Improving your recommendations... (Attempt ' + (retryCount + 1) + ' of 3)</p>';
-        setTimeout(getRecommendations, 2000);
-    } else {
-        localStorage.setItem('retryCount', '0');
-        document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ We could not get good recommendations right now. Please try again.</p>';
-    }
+  retryCount++;
+if (retryCount < 3) {
+    document.getElementById('rec-container').innerHTML = '<p style="color:orange;">⚠️ Improving your recommendations... (Attempt ' + retryCount + ' of 3)</p>';
+    setTimeout(function() { getRecommendations(true); }, 2000);
+} else {
+    document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ We could not get good recommendations right now. Please try again.</p>';
+}
     return;
 }
-localStorage.setItem('retryCount', '0');
   console.log('Validation ran. Errors found:', validationErrors.length);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
