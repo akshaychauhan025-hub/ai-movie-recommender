@@ -315,6 +315,9 @@ if (retryCount < 3) {
     return;
 }
   console.log('Validation ran. Errors found:', validationErrors.length);
+  var formatResult = scoreFormat(text);
+console.log('Format Score:', formatResult.score + '/100');
+console.log('Breakdown:', formatResult.breakdown);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
 var html = '';
@@ -370,6 +373,60 @@ document.getElementById('rec-container').innerHTML = html;
     }
 
     return errors;
+}
+  function scoreFormat(text) {
+  var score = 0;
+  var breakdown = [];
+
+  // 1. Exactly 5 movies
+  var movieCount = (text.match(/MOVIE \d/g) || []).length;
+  if (movieCount === 5) {
+    score += 20;
+    breakdown.push('✅ 5 movies returned (+20)');
+  } else {
+    breakdown.push('❌ ' + movieCount + ' movies returned (+0)');
+  }
+
+  // 2. All movies have a year
+  var years = text.match(/\(\d{4}\)/g) || [];
+  if (years.length >= 5) {
+    score += 20;
+    breakdown.push('✅ All years present (+20)');
+  } else {
+    breakdown.push('❌ Only ' + years.length + ' years found (+0)');
+  }
+
+  // 3. Years are realistic
+  var badYears = years.filter(function(y) {
+    var yr = parseInt(y.replace(/[()]/g, ''));
+    return yr < 1950 || yr > 2025;
+  });
+  if (badYears.length === 0) {
+    score += 20;
+    breakdown.push('✅ All years realistic (+20)');
+  } else {
+    breakdown.push('❌ Suspicious years: ' + badYears.join(', ') + ' (+0)');
+  }
+
+  // 4. WHY present for each movie
+  var whyCount = (text.match(/WHY:/g) || []).length;
+  if (whyCount >= 5) {
+    score += 20;
+    breakdown.push('✅ All WHY: present (+20)');
+  } else {
+    breakdown.push('❌ Only ' + whyCount + ' WHY: found (+0)');
+  }
+
+  // 5. RATING present for each movie
+  var ratingCount = (text.match(/RATING:/g) || []).length;
+  if (ratingCount >= 5) {
+    score += 20;
+    breakdown.push('✅ All RATING: present (+20)');
+  } else {
+    breakdown.push('❌ Only ' + ratingCount + ' RATING: found (+0)');
+  }
+
+  return { score: score, breakdown: breakdown };
 }
 </script>
 </body>
