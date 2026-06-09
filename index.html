@@ -301,6 +301,7 @@ var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
 
     var data = await response.json();
    var text = data.choices ? data.choices[0].message.content.trim() : JSON.stringify(data);
+  console.log('AI raw response:', text);
   var validationErrors = validateRecommendations(text);
 if (validationErrors.length > 0) {
     console.log('Guardrail triggered:', validationErrors);
