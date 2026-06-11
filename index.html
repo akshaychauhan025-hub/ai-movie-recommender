@@ -316,6 +316,59 @@ if (retryCount < 3) {
 }
   console.log('Validation ran. Errors found:', validationErrors.length);
   var formatResult = scoreFormat(text);
+  function scoreRelevance(text, segment, genre, mood) {
+  var score = 0;
+  var breakdown = [];
+
+  // Extract all WHY: sections
+  var whys = text.match(/WHY:.*$/gm) || [];
+
+  // 1. WHY mentions genre
+  var genreMentioned = whys.filter(function(w) {
+    return w.toLowerCase().includes(genre.toLowerCase());
+  }).length;
+  if (genreMentioned >= 3) {
+    score += 25;
+    breakdown.push('✅ Genre mentioned in WHY (' + genreMentioned + '/5) (+25)');
+  } else {
+    breakdown.push('❌ Genre rarely mentioned in WHY (' + genreMentioned + '/5) (+0)');
+  }
+
+  // 2. WHY mentions mood
+  var moodMentioned = whys.filter(function(w) {
+    return w.toLowerCase().includes(mood.toLowerCase());
+  }).length;
+  if (moodMentioned >= 3) {
+    score += 25;
+    breakdown.push('✅ Mood mentioned in WHY (' + moodMentioned + '/5) (+25)');
+  } else {
+    breakdown.push('❌ Mood rarely mentioned in WHY (' + moodMentioned + '/5) (+0)');
+  }
+
+  // 3. WHY mentions segment
+  var segmentMentioned = whys.filter(function(w) {
+    return w.toLowerCase().includes(segment.toLowerCase());
+  }).length;
+  if (segmentMentioned >= 3) {
+    score += 25;
+    breakdown.push('✅ Segment mentioned in WHY (' + segmentMentioned + '/5) (+25)');
+  } else {
+    breakdown.push('❌ Segment rarely mentioned in WHY (' + segmentMentioned + '/5) (+0)');
+  }
+
+  // 4. WHY is detailed enough (at least 10 words each)
+  var detailedWhys = whys.filter(function(w) {
+    return w.split(' ').length >= 10;
+  }).length;
+  if (detailedWhys >= 5) {
+    score += 25;
+    breakdown.push('✅ All WHY sections detailed (+25)');
+  } else {
+    breakdown.push('❌ Only ' + detailedWhys + '/5 WHY sections are detailed (+0)');
+  }
+
+  return { score: score, breakdown: breakdown };
+}
 console.log('Format Score:', formatResult.score + '/100');
 console.log('Breakdown:', formatResult.breakdown);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
@@ -428,6 +481,54 @@ document.getElementById('rec-container').innerHTML = html;
 
   return { score: score, breakdown: breakdown };
 }
+  // ADD THIS ENTIRE BLOCK HERE:
+  function scoreRelevance(text, segment, genre, mood) {
+    var score = 0;
+    var breakdown = [];
+    var whys = text.match(/WHY:.*$/gm) || [];
+
+    var genreMentioned = whys.filter(function(w) {
+      return w.toLowerCase().includes(genre.toLowerCase());
+    }).length;
+    if (genreMentioned >= 3) {
+      score += 25;
+      breakdown.push('✅ Genre mentioned in WHY (' + genreMentioned + '/5) (+25)');
+    } else {
+      breakdown.push('❌ Genre rarely mentioned (' + genreMentioned + '/5) (+0)');
+    }
+
+    var moodMentioned = whys.filter(function(w) {
+      return w.toLowerCase().includes(mood.toLowerCase());
+    }).length;
+    if (moodMentioned >= 3) {
+      score += 25;
+      breakdown.push('✅ Mood mentioned in WHY (' + moodMentioned + '/5) (+25)');
+    } else {
+      breakdown.push('❌ Mood rarely mentioned (' + moodMentioned + '/5) (+0)');
+    }
+
+    var segmentMentioned = whys.filter(function(w) {
+      return w.toLowerCase().includes(segment.toLowerCase());
+    }).length;
+    if (segmentMentioned >= 3) {
+      score += 25;
+      breakdown.push('✅ Segment mentioned in WHY (' + segmentMentioned + '/5) (+25)');
+    } else {
+      breakdown.push('❌ Segment rarely mentioned (' + segmentMentioned + '/5) (+0)');
+    }
+
+    var detailedWhys = whys.filter(function(w) {
+      return w.split(' ').length >= 10;
+    }).length;
+    if (detailedWhys >= 5) {
+      score += 25;
+      breakdown.push('✅ All WHY sections detailed (+25)');
+    } else {
+      breakdown.push('❌ Only ' + detailedWhys + '/5 WHY sections detailed (+0)');
+    }
+
+    return { score: score, breakdown: breakdown };
+  }
 </script>
 </body>
 </html>
