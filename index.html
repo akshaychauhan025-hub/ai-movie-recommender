@@ -371,6 +371,9 @@ if (retryCount < 3) {
 }
 console.log('Format Score:', formatResult.score + '/100');
 console.log('Breakdown:', formatResult.breakdown);
+  var relevanceResult = scoreRelevance(text, segment, genre, mood);
+console.log('Relevance Score:', relevanceResult.score + '/100');
+console.log('Relevance Breakdown:', relevanceResult.breakdown);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
 var html = '';
