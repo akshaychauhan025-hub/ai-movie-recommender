@@ -492,6 +492,7 @@ document.getElementById('rec-container').innerHTML = html;
     var score = 0;
     var breakdown = [];
     var ratingMatches = text.match(/RATING:\s*(\d+)\/10/g) || [];
+    console.log('Raw rating matches:', ratingMatches);
     var ratings = ratingMatches.map(function(r) { return parseInt(r.match(/\d+/)[0]); });
     if (ratings.length < 5) {
       breakdown.push('❌ Only ' + ratings.length + ' ratings found (+0)');
