@@ -375,6 +375,9 @@ console.log('Breakdown:', formatResult.breakdown);
   var relevanceResult = scoreRelevance(text, segment, genre, mood);
 console.log('Relevance Score:', relevanceResult.score + '/100');
 console.log('Relevance Breakdown:', relevanceResult.breakdown);
+  var ratingResult = scoreRatingSpread(text);
+console.log('Rating Spread Score:', ratingResult.score + '/100');
+console.log('Rating Breakdown:', ratingResult.breakdown);
     var formatted = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
 var recommendations = formatted.split('MOVIE ').filter(r => r.trim() !== '');
 var html = '';
@@ -486,10 +489,10 @@ document.getElementById('rec-container').innerHTML = html;
   return { score: score, breakdown: breakdown };
 }
   // ADD THIS ENTIRE BLOCK HERE:
-  function scoreRelevance(text, segment, genre, mood) {
-    var score = 0;
-    var breakdown = [];
-    var whys = text.match(/WHY:.*$/gm) || [];
+  // function scoreRelevance(text, segment, genre, mood) {
+    // var score = 0;
+    // var breakdown = [];
+    // var whys = text.match(/WHY:.*$/gm) || [];
 
     var genreMentioned = whys.filter(function(w) {
       return w.toLowerCase().includes(genre.toLowerCase());
@@ -531,6 +534,31 @@ document.getElementById('rec-container').innerHTML = html;
       breakdown.push('❌ Only ' + detailedWhys + '/5 WHY sections detailed (+0)');
     }
 
+    return { score: score, breakdown: breakdown };
+  }
+  
+  function scoreRatingSpread(text) {
+    var score = 0;
+    var breakdown = [];
+    var ratingMatches = text.match(/RATING:\s*(\d+)\/10/g) || [];
+    var ratings = ratingMatches.map(function(r) { return parseInt(r.match(/\d+/)[0]); });
+    if (ratings.length < 5) {
+      breakdown.push('❌ Only ' + ratings.length + ' ratings found (+0)');
+      return { score: 0, breakdown: breakdown };
+    }
+    var validRatings = ratings.filter(function(r) { return r >= 1 && r <= 10; });
+    if (validRatings.length === 5) { score += 25; breakdown.push('✅ All ratings within 1-10 (+25)'); }
+    else { breakdown.push('❌ Some ratings out of range (+0)'); }
+    var unique = [...new Set(ratings)];
+    if (unique.length > 1) { score += 25; breakdown.push('✅ Ratings are varied (+25)'); }
+    else { breakdown.push('❌ All ratings identical: ' + ratings[0] + '/10 (+0)'); }
+    var max = Math.max(...ratings);
+    var min = Math.min(...ratings);
+    if (max - min >= 2) { score += 25; breakdown.push('✅ Rating spread: ' + min + ' to ' + max + ' (+25)'); }
+    else { breakdown.push('❌ Spread too narrow: ' + min + ' to ' + max + ' (+0)'); }
+    var extremes = ratings.filter(function(r) { return r < 4; });
+    if (extremes.length === 0) { score += 25; breakdown.push('✅ No suspiciously low ratings (+25)'); }
+    else { breakdown.push('❌ Suspiciously low rating detected (+0)'); }
     return { score: score, breakdown: breakdown };
   }
 </script>
