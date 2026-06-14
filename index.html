@@ -311,11 +311,13 @@ if (retryCount < 3) {
     document.getElementById('rec-container').innerHTML = '<p style="color:orange;">⚠️ Improving your recommendations... (Attempt ' + retryCount + ' of 3)</p>';
     setTimeout(function() { getRecommendations(true); }, 2000);
 } else {
-    document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ We could not get good recommendations right now. Please try again.</p>';
+ document.getElementById('rec-container').innerHTML = '<p style="color:red;">⚠️ We could not get good recommendations right now. Please try again.</p>';
+trackRetryRate(true);
 }
     return;
 }
   console.log('Validation ran. Errors found:', validationErrors.length);
+  trackRetryRate(false);
   var formatResult = scoreFormat(text);
   function scoreRelevance(text, segment, genre, mood) {
   var score = 0;
@@ -512,6 +514,15 @@ document.getElementById('rec-container').innerHTML = html;
     if (extremes.length === 0) { score += 25; breakdown.push('✅ No suspiciously low ratings (+25)'); }
     else { breakdown.push('❌ Suspiciously low rating detected (+0)'); }
     return { score: score, breakdown: breakdown };
+ 
+  }
+  function trackRetryRate(didRetry) {
+    var stats = JSON.parse(localStorage.getItem('retryStats') || '{"total":0,"retries":0}');
+    stats.total++;
+    if (didRetry) stats.retries++;
+    localStorage.setItem('retryStats', JSON.stringify(stats));
+    var rate = ((stats.retries / stats.total) * 100).toFixed(1);
+    console.log('Retry Rate: ' + stats.retries + '/' + stats.total + ' requests failed (' + rate + '%)');
   }
 </script>
 </body>
