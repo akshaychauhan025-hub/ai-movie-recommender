@@ -208,6 +208,41 @@ button:hover {
   if (freetext.trim().length < 3) errors.push('Please enter at least 3 characters.');
   return errors;
 }
+  async function fetchMoviesFromTMDB(genre, language) {
+
+  // Map your genre values to TMDB genre IDs
+  var genreMap = {
+    'thriller': 53,
+    'romantic': 10749,
+    'comedy': 35,
+    'horror': 27,
+    'scifi': 878,
+    'drama': 18
+  };
+
+  // Map your language values to TMDB language codes
+  var languageMap = {
+    'bollywood': 'hi',
+    'hollywood': 'en',
+    'korean': 'ko',
+    'international': 'fr'
+  };
+
+  var genreId = genreMap[genre] || 53;
+  var lang = languageMap[language] || 'en';
+
+  var url = 'https://api.themoviedb.org/3/discover/movie?with_genres=' + genreId + '&with_original_language=' + lang + '&sort_by=popularity.desc&page=1';
+
+  var response = await fetch(url, {
+    headers: {
+      'Authorization': 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3MGMzNmFjOGUyYWYzMWE0NDg2ODAxYmRmMjJlZTEzYSIsIm5iZiI6MTc4MTQzNDAwOC4wMzMsInN1YiI6IjZhMmU4Njk4YjhjN2JlNzlkYzdhNGNhNyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.VWTKvQTTeWU7R9phHLzaxHAwF28-SkniSNd-bZCnx-s',
+      'Content-Type': 'application/json'
+    }
+  });
+
+  var data = await response.json();
+  return data.results ? data.results.slice(0, 20) : [];
+}
   function signIn() {
     var name = document.getElementById('user-name').value;
     var email = document.getElementById('user-email').value;
@@ -246,7 +281,12 @@ if (inputErrors.length > 0) {
   alert('⚠️ ' + inputErrors[0]);
   return;
 }
-
+// FETCH REAL MOVIES FROM TMDB
+var tmdbMovies = await fetchMoviesFromTMDB(genre, language);
+var movieList = tmdbMovies.map(function(m) {
+  return m.title + ' (' + m.release_date.substring(0, 4) + ')';
+}).join('\n');
+console.log('TMDB movies fetched:', movieList);
     document.getElementById('screen-preferences').style.display = 'none';
     document.getElementById('screen-recommendations').style.display = 'block';
     document.getElementById('rec-container').innerHTML = '<p>🤖 AI is finding your matches...</p>';
