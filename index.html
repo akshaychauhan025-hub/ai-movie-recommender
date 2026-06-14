@@ -322,7 +322,10 @@ var userPrompt = `Recommend 5 movies for this user:
 - Language preference: ${language}
 - Genre: ${genre}
 - Mood: ${mood}
-- Additional request: ${freetext}${historyContext}`;
+- Additional request: ${freetext}${historyContext}
+
+IMPORTANT: You MUST only recommend movies from this list below. Do not recommend any movie not on this list:
+${movieList}`;
 
 var response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
         method: 'POST',
